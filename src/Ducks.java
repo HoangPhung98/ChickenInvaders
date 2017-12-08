@@ -7,6 +7,7 @@ public class Ducks {
 	 public  int ydirection ;
 	 public  boolean isAlive ;
 	 public  boolean isGone ;
+	 public  boolean canFlyAway ;
 	 public  int  hitWallTimes ;
 	 
 	 
