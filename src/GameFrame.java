@@ -46,26 +46,6 @@ public class GameFrame  {
 		inGame = new InGame();
 	}
 	
-	private static void setWindow(){
-		StdDraw.setCanvasSize(WIDTH, HEIGHT);
-		StdDraw.setXscale(0, WIDTH);
-		StdDraw.setYscale(0, HEIGHT);
-		StdDraw.picture(HALF_WIDTH, HALF_HEIGHT, "startScene.jpg", WIDTH, HEIGHT);
-		StdDraw.setPenColor(StdDraw.BOOK_BLUE);
-		System.out.println(StdDraw.getPenRadius());
-
-		StdDraw.setFont(new Font("hey",Font.BOLD,136));
-		StdDraw.text(HALF_WIDTH, HALF_HEIGHT-180, "Duck Lover");
-	}
-
-	public static int getHalfWidth() {
-		return HALF_WIDTH;
-	}
-
-	public static int getHalfHeight() {
-		return HALF_HEIGHT;
-	}
-
 	public static int getHeight() {
 		return HEIGHT;
 	}
