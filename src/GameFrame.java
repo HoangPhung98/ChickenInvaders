@@ -37,7 +37,7 @@ public class GameFrame  {
 		
 	}
 	
-	private static void waitForStartGame(){
+	private  static void waitForStartGame(){
 		while(!isPlaying){
 			if(StdDraw.isKeyPressed(0)||StdDraw.isMousePressed()) isPlaying = true;
 		}
@@ -50,7 +50,6 @@ public class GameFrame  {
 		StdDraw.setYscale(0, HEIGHT);
 		StdDraw.picture(HALF_WIDTH, HALF_HEIGHT, "startScene.jpg", WIDTH, HEIGHT);
 		StdDraw.setPenColor(StdDraw.BOOK_BLUE);
-		System.out.println(StdDraw.getPenRadius());
 
 		StdDraw.setFont(new Font("hey",Font.BOLD,136));
 		StdDraw.text(HALF_WIDTH, HALF_HEIGHT-180, "Duck Lover");

@@ -22,6 +22,8 @@ public class InGame  implements Runnable{
 	final int duckPading = 32;
 	private long time;
 	private final int NUMBER_OF_DUCKS = 5;
+	private final long TIME_BETWEEN_SHOTS = 200;
+	private long shotTime = 0;
 	Ducks [] flyingDucks;
 	
 	
@@ -38,9 +40,7 @@ public class InGame  implements Runnable{
 		xCross = StdDraw.mouseX(); 
 		yCross = StdDraw.mouseY();
 		drawCross();
-		
 		createMatrix();
-		
 		run();
 		
 	} 
@@ -70,7 +70,8 @@ public class InGame  implements Runnable{
 			StdDraw.picture(flyingDucks[i].xCoordinate, flyingDucks[i].yCoordinate, flyingDucks[i].duckDeadAnimation[0], duckSize, duckSize);	
 		}else{
 			flyingDucks[i].setDuckFallDown();
-			StdDraw.picture(flyingDucks[i].xCoordinate, flyingDucks[i].yCoordinate, flyingDucks[i].duckDeadAnimation[1], duckSize, duckSize);	
+			StdDraw.picture(flyingDucks[i].xCoordinate, flyingDucks[i].yCoordinate, flyingDucks[i].duckDeadAnimation[flyingDucks[i].duckDeadAnimationStatus], duckSize, duckSize);	
+			System.out.println(flyingDucks[i].duckDeadAnimationStatus+"---");
 		}
 	}
 	private void drawAliveDuck(int i){
@@ -93,7 +94,6 @@ public class InGame  implements Runnable{
 
 			drawDuck();
 			checkShotDuck();
-			
 			try {
 				thread.sleep(20);
 			} catch (InterruptedException e) {e.printStackTrace();}
@@ -105,7 +105,9 @@ public class InGame  implements Runnable{
 	
 	/////////////////////////////////////////////
 	private void checkShotDuck(){
+		if(System.currentTimeMillis() - shotTime > TIME_BETWEEN_SHOTS ){
 		if(StdDraw.isMousePressed()){
+			StdAudio.play("shot.wav");
 			for(int i=0; i< NUMBER_OF_DUCKS; i++){
 				if ( StdDraw.mouseX() < flyingDucks[i].xCoordinate + duckPading && StdDraw.mouseX() > flyingDucks[i].xCoordinate - duckPading
 						&& StdDraw.mouseY() < flyingDucks[i].yCoordinate + duckPading && StdDraw.mouseY() > flyingDucks[i].yCoordinate - duckPading	) {
@@ -113,6 +115,8 @@ public class InGame  implements Runnable{
 					flyingDucks[i].setDuckDead();
 				}
 			}
+		}
+		shotTime = System.currentTimeMillis();
 		}
 		
 	}

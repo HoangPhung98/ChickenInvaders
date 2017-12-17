@@ -7,17 +7,22 @@ public class Ducks {
 	public int xdirection;
 	public int ydirection;
 	int degree;
+	
 	public boolean isAlive;
 	public boolean isGone;
 	public boolean canFlyAway;
 	public int hitWallTimes;
+	
 	private final int FROM_LEFT_WALL = 0;
 	private final int FROM_BOTTOM_WALL = 1;
 	private final int FROM_RIGHT_WALL = 2;
+	
 	String[] duckRightAnimation = new String[3];
 	String[] duckLeftAnimation = new String[3];
-	String[] duckDeadAnimation  = new String[2];
+	String[] duckDeadAnimation  = new String[3];
 	int duckAnimationStatus = 0;
+	int duckDeadAnimationStatus = 1;
+	
 	static long timeStayOnAir = 500;
 	private String [] colorAray = {"blue", "green","red"};
 	private String color;
@@ -41,6 +46,7 @@ public class Ducks {
 	private void setDuckDeadAnimation(){
 		duckDeadAnimation[0] = this.color + "DuckDead0.png";
 		duckDeadAnimation[1] = this.color + "DuckDead1.png";
+		duckDeadAnimation[2] = this.color + "DuckDead2.png";
 	}
 	String getDuck_R_or_Left_Animation(){
 		if(this.isAlive){
@@ -77,9 +83,15 @@ public class Ducks {
 		checkHitWall();
 	}
 	private void updateDuckAnimationStatus(){
-		this.duckAnimationStatus++;
-		this.duckAnimationStatus%=3;
+		if(this.isAlive){
+			this.duckAnimationStatus++;
+			this.duckAnimationStatus%=3;
+		}else{
+			this.duckDeadAnimationStatus%=2;
+			this.duckDeadAnimationStatus++;
+		}
 	}
+		
 	private Point getCoordinateOfDuck() {
 
 		int y = 20;
@@ -110,7 +122,6 @@ public class Ducks {
 			this.ydirection = -35;
 		} else
 			this.ydirection = 35;
-		System.out.println("x: "+ xdirection + " y: "+ydirection);
 	}
 
 	void setDuckDead() {
