@@ -25,8 +25,6 @@ public class GameFrame  {
 	private static boolean isPlaying = false;
 
 	public GameFrame(){
-		
-
 
 	}
 	
@@ -73,10 +71,4 @@ public class GameFrame  {
 	public static int getWidth() {
 		return WIDTH;
 	}
-
-	
-	
-
-
-
 }
