@@ -6,23 +6,28 @@ public class Ducks {
 	public int yCoordinate;
 	public int xdirection;
 	public int ydirection;
+	private int xDuckDeathAtCoordinate;
+	private int yDuckDeathAtCoordinate;
 	int degree;
 	
 	public boolean isAlive;
-	public boolean isGone;
-	public boolean canFlyAway;
-	public int hitWallTimes;
+//	public boolean isGone;
+//	public boolean canFlyAway;
+//	public int hitWallTimes;
 	
 	private final int FROM_LEFT_WALL = 0;
 	private final int FROM_BOTTOM_WALL = 1;
 	private final int FROM_RIGHT_WALL = 2;
+	private final int SPLASH_BLOOD_TIME = 1000;
 	
 	String[] duckRightAnimation = new String[3];
 	String[] duckLeftAnimation = new String[3];
 	String[] duckDeadAnimation  = new String[3];
+	String[] splashBloodAnimation = new String[6];
+	String splashBloodPicture;
 	int duckAnimationStatus = 0;
 	int duckDeadAnimationStatus = 1;
-	
+	private long duckDieAtTime;  
 	static long timeStayOnAir = 500;
 	private String [] colorAray = {"blue", "green","red"};
 	private String color;
@@ -32,6 +37,7 @@ public class Ducks {
 		setDuckRightAnimation();
 		setDuckLeftAnimation();
 		setDuckDeadAnimation();
+		setSplashBloodPicture();
 	}
 	private void setDuckRightAnimation(){
 		this.duckRightAnimation[0] = this.color + "DuckR0.png";
@@ -47,6 +53,25 @@ public class Ducks {
 		duckDeadAnimation[0] = this.color + "DuckDead0.png";
 		duckDeadAnimation[1] = this.color + "DuckDead1.png";
 		duckDeadAnimation[2] = this.color + "DuckDead2.png";
+	}
+	private void setSplashBloodPicture(){
+		splashBloodAnimation[0] = "bloodSplash0.png";
+		splashBloodAnimation[1] = "bloodSplash1.png";
+		splashBloodAnimation[2] = "bloodSplash2.png";
+		splashBloodAnimation[3] = "bloodSplash3.png";
+		splashBloodAnimation[4] = "bloodSplash4.png";
+		splashBloodAnimation[5] = "bloodSplash5.png";
+		
+	}
+	private void setRamdomSplashBlood(){
+		splashBloodPicture = splashBloodAnimation[StdRandom.uniform(6)];
+	}
+	public void drawSplashBlood(){
+		if(!this.isAlive){
+			if(System.currentTimeMillis() - duckDieAtTime < SPLASH_BLOOD_TIME){
+				StdDraw.picture(xDuckDeathAtCoordinate, yDuckDeathAtCoordinate, splashBloodPicture);
+			}
+		}
 	}
 	String getDuck_R_or_Left_Animation(){
 		if(this.isAlive){
@@ -71,7 +96,9 @@ public class Ducks {
 	void addDuck() {
 		this.yCoordinate = getCoordinateOfDuck().y;
 		this.xCoordinate = getCoordinateOfDuck().x;
+		color = colorAray[StdRandom.uniform(0, 3)];
 		setRamdomDirection();
+		setRamdomSplashBlood();
 		updateDuckDegree();
 
 	}
@@ -115,18 +142,21 @@ public class Ducks {
 
 	private void setRamdomDirection() {
 		if (StdRandom.uniform(0, 2) == 0) {
-			this.xdirection = -35;
+			this.xdirection = -30;
 		} else
-			this.xdirection = 35;
+			this.xdirection = 30;
 		if (StdRandom.uniform(0, 2) == 0) {
-			this.ydirection = -35;
+			this.ydirection = -30;
 		} else
-			this.ydirection = 35;
+			this.ydirection = 30;
 	}
 
 	void setDuckDead() {
 		setDuckDeadStayOnAir();
 		this.isAlive = false;
+		this.duckDieAtTime = System.currentTimeMillis();
+		this.xDuckDeathAtCoordinate = (int)StdDraw.mouseX();
+		this.yDuckDeathAtCoordinate = (int)StdDraw.mouseY();
 	}
 	void setDuckDeadStayOnAir(){
 		time = System.currentTimeMillis();
@@ -141,33 +171,32 @@ public class Ducks {
 	private void checkHitWall() {
 		// if the duck hit the wall 4 times then it can fly away
 		if (this.yCoordinate + 20 > GameFrame.getHeight()) {
-			if (!checkHit4Times(this)) {
+//			if (!checkHit4Times(this)) {
 				this.ydirection *= -1;
-				this.hitWallTimes++;
+//				this.hitWallTimes++;
 			} else {
-				this.isGone = true;
+//				this.isGone = true;
 			}
-		}
 
 		// the duck is turn back if hit the wall
 		if (this.xCoordinate + 20 > GameFrame.getWidth() || this.xCoordinate - 20 < 0) {
 			this.xdirection *= -1;
-			this.hitWallTimes++;
+//			this.hitWallTimes++;
 		}
 		if (this.yCoordinate - 20 < 0) {
 			if(this.isAlive){
 				this.ydirection *= -1;
-				this.hitWallTimes++;
+//				this.hitWallTimes++;
 			}else { this.ydirection =0; this.xdirection = 0;}
 		}
 		updateDuckDegree();
 	}
 
-	private boolean checkHit4Times(Ducks duck) {
-		if (duck.hitWallTimes > 4)
-			return true;
-		else
-			return false;
-	}
+//	private boolean checkHit4Times(Ducks duck) {
+//		if (duck.hitWallTimes > 4)
+//			return true;
+//		else
+//			return false;
+//	}
 
 }

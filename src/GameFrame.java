@@ -20,12 +20,11 @@ public class GameFrame  {
 	final static int HALF_HEIGHT = 350;
 	final static int HEIGHT = HALF_HEIGHT*2;
 	final static int WIDTH = HALF_WIDTH*2;
-	
+	public static boolean started = false;
 	static InGame inGame;
-	private static boolean isPlaying = false;
+	public static boolean isPlaying = false;
 
 	public GameFrame(){
-
 	}
 	
 	public static void main(String[] args) {
@@ -37,22 +36,34 @@ public class GameFrame  {
 		
 	}
 	
-	private  static void waitForStartGame(){
+	public  static void waitForStartGame(){
+
 		while(!isPlaying){
-			if(StdDraw.isKeyPressed(0)||StdDraw.isMousePressed()) isPlaying = true;
+			if(StdDraw.isKeyPressed(0)||StdDraw.isMousePressed()) {
+				isPlaying = true;
+//				StdAudio.close();
+			}
 		}
-		inGame = new InGame();
+		if(!started)inGame = new InGame();
 	}
 	
 	private static void setWindow(){
 		StdDraw.setCanvasSize(WIDTH, HEIGHT);
 		StdDraw.setXscale(0, WIDTH);
 		StdDraw.setYscale(0, HEIGHT);
-		StdDraw.picture(HALF_WIDTH, HALF_HEIGHT, "startScene.jpg", WIDTH, HEIGHT);
+		drawWindow();
+		StdAudio.loop("kingsMan.wav");
+		
+		
+	}
+	public static  void drawWindow(){
+		StdDraw.picture(HALF_WIDTH, HALF_HEIGHT, "playWallpaper.png", WIDTH, HEIGHT);
 		StdDraw.setPenColor(StdDraw.BOOK_BLUE);
 
 		StdDraw.setFont(new Font("hey",Font.BOLD,136));
 		StdDraw.text(HALF_WIDTH, HALF_HEIGHT-180, "Duck Lover");
+		StdDraw.show(100);
+		
 	}
 
 	public static int getHalfWidth() {
