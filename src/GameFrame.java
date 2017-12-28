@@ -23,15 +23,13 @@ public class GameFrame  {
 	public static boolean started = false;
 	static InGame inGame;
 	public static boolean isPlaying = false;
-
+	//====================================================================================
 	public GameFrame(){
 	}
 	
 	public static void main(String[] args) {
-		
-		GameFrame gameFrame = new GameFrame();
+//		GameFrame gameFrame = new GameFrame();
 		setWindow();
-
 		waitForStartGame();
 		
 	}
@@ -41,7 +39,6 @@ public class GameFrame  {
 		while(!isPlaying){
 			if(StdDraw.isKeyPressed(0)||StdDraw.isMousePressed()) {
 				isPlaying = true;
-//				StdAudio.close();
 			}
 		}
 		if(!started)inGame = new InGame();
@@ -57,12 +54,13 @@ public class GameFrame  {
 		
 	}
 	public static  void drawWindow(){
+		StdDraw.picture(HALF_WIDTH, HALF_HEIGHT, "background.jpg", WIDTH, HEIGHT);
 		StdDraw.picture(HALF_WIDTH, HALF_HEIGHT, "playWallpaper.png", WIDTH, HEIGHT);
 		StdDraw.setPenColor(StdDraw.BOOK_BLUE);
 
 		StdDraw.setFont(new Font("hey",Font.BOLD,136));
 		StdDraw.text(HALF_WIDTH, HALF_HEIGHT-180, "Duck Lover");
-		StdDraw.show(100);
+		StdDraw.show();
 		
 	}
 
