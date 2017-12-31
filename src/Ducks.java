@@ -1,11 +1,15 @@
 import java.awt.Point;
 
 public class Ducks {
-	//Position
+	// Position
 	public int xCoordinate;
 	public int yCoordinate;
 	public int xdirection;
 	public int ydirection;
+	public int xBoomCoordinate;
+	public int yBoomCoordinate;
+	public int xBoomDicrection;
+	public int yBoomDicrection;
 	private int xDuckDeathAtCoordinate;
 	private int yDuckDeathAtCoordinate;
 	int degree;
@@ -15,31 +19,42 @@ public class Ducks {
 	private final int SPLASH_BLOOD_TIME = 1000;
 	private final int ONE_MOVE_OF_DUCK = 17;
 
-	//Animation
+	// Animation
 	String[] duckRightAnimation = new String[3];
 	String[] duckLeftAnimation = new String[3];
 	String[] duckDeadAnimation = new String[3];
 	String[] splashBloodAnimation = new String[6];
+	String[] boom = new String[5];
 	String splashBloodPicture;
 	int duckAnimationStatus = 0;
 	int duckDeadAnimationStatus = 1;
+	int boomExplosionStatus = 0;
 	public boolean isAlive;
+	final int VALOCITY_OF_BOOM_FALLING = 20;
+	final int TIME_MOVE_OF_BOOM_FALLING = 20;
+	boolean duckHasBoom = true;
+	boolean canBoomExplosion = true;
+	boolean canPlayExplosionSound = true;
+	int boomExplosionPosition;
+	boolean boomIsShoted = false;
 
-	//Color
+	// Color
 	private String[] colorAray = { "blue", "green", "red" };
 	private String color;
-	
-	//Time
+
+	// Time
 	private long duckDieAtTime;
 	static long timeStayOnAir = 500;
 	long time;
-	//===============================================================================
+
+	// ===============================================================================
 	public Ducks() {
 		color = colorAray[StdRandom.uniform(0, 3)];
 		setDuckRightAnimation();
 		setDuckLeftAnimation();
 		setDuckDeadAnimation();
 		setSplashBloodPicture();
+		setRamdomBoomExplosionPosition();
 	}
 
 	// < Process Things > ****************
@@ -48,6 +63,8 @@ public class Ducks {
 		if (this.yCoordinate + 20 > GameFrame.getHeight()) {
 			// if (!checkHit4Times(this)) {
 			this.ydirection *= -1;
+			if (duckHasBoom)
+				setABoom();
 			// this.hitWallTimes++;
 		} else {
 			// this.isGone = true;
@@ -70,8 +87,12 @@ public class Ducks {
 		updateDuckDegree();
 	}
 	// </ Process Things >
-	
+
 	// <Update Things> **********
+	private void updateBoomPosition() {
+		yBoomCoordinate += yBoomDicrection;
+	}
+
 	private void updateDuckDegree() {
 		if (this.xdirection > 0) {
 			if (this.ydirection > 0)
@@ -85,12 +106,14 @@ public class Ducks {
 				this.degree = 45;
 		}
 	}
+
 	void updateDuckPosition() {
 		this.xCoordinate += this.xdirection;
 		this.yCoordinate += this.ydirection;
 		updateDuckAnimationStatus();
 		checkHitWall();
 	}
+
 	private void updateDuckAnimationStatus() {
 		if (this.isAlive) {
 			this.duckAnimationStatus++;
@@ -101,8 +124,8 @@ public class Ducks {
 		}
 	}
 	// </ Update Thing>
-	
-	//<Draw Things> *********
+
+	// <Draw Things> *********
 	public void drawSplashBlood() {
 		if (!this.isAlive) {
 			if (System.currentTimeMillis() - duckDieAtTime < SPLASH_BLOOD_TIME) {
@@ -111,11 +134,57 @@ public class Ducks {
 		}
 	}
 
-	//</Draw Things>
+	public void drawBoombing() {
+		if (!boomIsShoted) {
+			if (yBoomCoordinate > boomExplosionPosition) {
+				StdDraw.picture(xBoomCoordinate, yBoomCoordinate, "Images/Wepon/boom0.png", 50, 50);
+				updateBoomPosition();
+			} else {
+				// if (canBoomExplosion) {
+				drawBoomExplosion();
+				// }
+				if (canPlayExplosionSound) {
+					StdAudio.play("Audio/Effect/Boom/boomExplosionSound.wav");
+					canPlayExplosionSound = false;
+				}
+			}
+		} else {
+			drawBoomExplosion();
+		}
+
+	}
+
+	public void drawBoomExplosion() {
+		if (canBoomExplosion) {
+			StdDraw.picture(xBoomCoordinate, yBoomCoordinate,
+					"Images/Effect/disappearEffect" + boomExplosionStatus + ".png", 100, 100);
+			boomExplosionStatus++;
+			if (boomExplosionStatus == 8) {
+				canBoomExplosion = false;
+				boomExplosionStatus = 0;
+			}
+		}
+	}
+
+	// </Draw Things>
 	// < Set Things? ***********
+	private void setRamdomBoomExplosionPosition() {
+		boomExplosionPosition = StdRandom.uniform(180, 320);
+	}
+
+	private void setABoom() {
+		xBoomCoordinate = this.xCoordinate;
+		yBoomCoordinate = this.yCoordinate;
+		xBoomDicrection = 0;
+		yBoomDicrection = -10;
+		duckHasBoom = false;
+
+	}
+
 	private void setRamdomSplashBlood() {
 		splashBloodPicture = splashBloodAnimation[StdRandom.uniform(6)];
 	}
+
 	private void setRamdomDirection() {
 		if (StdRandom.uniform(0, 2) == 0) {
 			this.xdirection = -ONE_MOVE_OF_DUCK;
@@ -126,21 +195,28 @@ public class Ducks {
 		} else
 			this.ydirection = ONE_MOVE_OF_DUCK;
 	}
+
 	void setDuckDeadStayOnAir() {
 		time = System.currentTimeMillis();
 		this.xdirection = 0;
 		this.ydirection = 0;
 	}
+
 	void setDuckFallDown() {
 		this.xdirection = 0;
 		this.ydirection = -50;
 	}
+
 	void setDuckDead() {
 		setDuckDeadStayOnAir();
 		this.isAlive = false;
 		this.duckDieAtTime = System.currentTimeMillis();
 		this.xDuckDeathAtCoordinate = (int) StdDraw.mouseX();
 		this.yDuckDeathAtCoordinate = (int) StdDraw.mouseY();
+	}
+
+	public void setBoomIsShoted() {
+		boomIsShoted = true;
 	}
 	// </Set Thing>
 
@@ -157,6 +233,7 @@ public class Ducks {
 			return duckDeadAnimation[0];
 		}
 	}
+
 	private Point getCoordinateOfDuck() {
 
 		int y = 20;
@@ -177,7 +254,7 @@ public class Ducks {
 		return new Point(x, y);
 
 	}
-	// </ Get Things >
+	// </ Set Things >
 
 	// < Init Things > *********************
 	void addDuck() {
@@ -188,28 +265,36 @@ public class Ducks {
 		setRamdomSplashBlood();
 		updateDuckDegree();
 	}
+
+	private void setBoomImage() {
+		boom[0] = "Images/Wepon/boom0.png";
+	}
+
 	private void setDuckRightAnimation() {
-		this.duckRightAnimation[0] = this.color + "DuckR0.png";
-		this.duckRightAnimation[1] = this.color + "DuckR1.png";
-		this.duckRightAnimation[2] = this.color + "DuckR2.png";
+		this.duckRightAnimation[0] = "Images/Duck/" + this.color + "Duck/" + this.color + "DuckR0.png";
+		this.duckRightAnimation[1] = "Images/Duck/" + this.color + "Duck/" + this.color + "DuckR1.png";
+		this.duckRightAnimation[2] = "Images/Duck/" + this.color + "Duck/" + this.color + "DuckR2.png";
 	}
+
 	private void setDuckLeftAnimation() {
-		this.duckLeftAnimation[0] = this.color + "DuckL0.png";
-		this.duckLeftAnimation[1] = this.color + "DuckL1.png";
-		this.duckLeftAnimation[2] = this.color + "DuckL2.png";
+		this.duckLeftAnimation[0] = "Images/Duck/" + this.color + "Duck/" + this.color + "DuckL0.png";
+		this.duckLeftAnimation[1] = "Images/Duck/" + this.color + "Duck/" + this.color + "DuckL1.png";
+		this.duckLeftAnimation[2] = "Images/Duck/" + this.color + "Duck/" + this.color + "DuckL2.png";
 	}
+
 	private void setDuckDeadAnimation() {
-		duckDeadAnimation[0] = this.color + "DuckDead0.png";
-		duckDeadAnimation[1] = this.color + "DuckDead1.png";
-		duckDeadAnimation[2] = this.color + "DuckDead2.png";
+		duckDeadAnimation[0] = "Images/Duck/" + this.color + "Duck/" + this.color + "DuckDead0.png";
+		duckDeadAnimation[1] = "Images/Duck/" + this.color + "Duck/" + this.color + "DuckDead1.png";
+		duckDeadAnimation[2] = "Images/Duck/" + this.color + "Duck/" + this.color + "DuckDead2.png";
 	}
+
 	private void setSplashBloodPicture() {
-		splashBloodAnimation[0] = "bloodSplash0.png";
-		splashBloodAnimation[1] = "bloodSplash1.png";
-		splashBloodAnimation[2] = "bloodSplash2.png";
-		splashBloodAnimation[3] = "bloodSplash3.png";
-		splashBloodAnimation[4] = "bloodSplash4.png";
-		splashBloodAnimation[5] = "bloodSplash5.png";
+		splashBloodAnimation[0] = "Images/Effect/bloodSplash0.png";
+		splashBloodAnimation[1] = "Images/Effect/bloodSplash1.png";
+		splashBloodAnimation[2] = "Images/Effect/bloodSplash2.png";
+		splashBloodAnimation[3] = "Images/Effect/bloodSplash3.png";
+		splashBloodAnimation[4] = "Images/Effect/bloodSplash4.png";
+		splashBloodAnimation[5] = "Images/Effect/bloodSplash5.png";
 	}
 	// </ Init Things>
 

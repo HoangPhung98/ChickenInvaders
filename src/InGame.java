@@ -24,28 +24,31 @@ public class InGame implements Runnable {
 	static int valocity = 80;
 
 	static Thread thread, threadMouse;
+	// decoration
+	TextAndNumber textAndNumber;
 
-	
-	//time
+	// time
 	private long time;
 	private static long timeStartThisLevel;
 	private long timeRunningStatus;
 	private long timeOfPreviousShot = 0;
-	//status
+	// status
 	private int totalDeadDuck;
 	private int consecutiveShotStatus = -1;
 	private static int round;
 	private int deadDuckNumber;
 	private long shotTime = 0;
-	
+
 	Ducks[] flyingDucks;
 	String[] inGameBackground;
 	String[] killSound;
+	String[] scoreNumber;
 
 	Gun gun;
 
 	Point point;
-	//===============================================================================
+
+	// ===============================================================================
 	public InGame() {
 		thread = new Thread(this);
 		thread.start();
@@ -53,12 +56,15 @@ public class InGame implements Runnable {
 		gameFrame = new GameFrame();
 		GameFrame.started = true;
 
+		initScoreNumberSprites();
 		initInGameBackground();
 		setKillSoundArray();
 		createMatrix();
+		round = 1;
 
 		drawBackGround();
 		gun = new Gun();
+		textAndNumber = new TextAndNumber();
 
 		// vẽ tâm ban đầu
 		xCross = StdDraw.mouseX();
@@ -69,7 +75,6 @@ public class InGame implements Runnable {
 		totalDeadDuck = 0;
 		numberOfDuckThisRound = NUMBER_OF_DUCKS;
 		timeRunningStatus = TIME_OF_A_LEVEL;
-		round = 1;
 
 		run();
 
@@ -86,20 +91,23 @@ public class InGame implements Runnable {
 
 		while (true) {
 			if (!checkGameOver()) {
-				drawCross();
 				if (checkCanMove(time)) {
 					for (int i = 0; i < numberOfDuckThisRound; i++)
 						flyingDucks[i].updateDuckPosition();
 					time = System.currentTimeMillis();
 				}
+				drawBackGround();
+				processShot();
 				drawTimeRunning();
-				processShotDuck();
 				drawDuck();
 				drawSandBag();
+				drawCross();
+				drawVietNamFlag();
+
 				gun.drawBullet();
-				if (gun.canReloadAmo)
-					gun.DrawReloadGunAmo();
-				else
+				if (gun.canReloadAmo) {
+					gun.DrawReloadGunAmo_GunExplotion_DisappearEffect();
+				} else
 					gun.drawGunWithDegree();
 
 				if (hasKillAllOfDuck()) {
@@ -136,11 +144,12 @@ public class InGame implements Runnable {
 	/////////////////////////////////////////////
 
 	// <Process Things ************
-	private void processShotDuck() {
+	private void processShot() {
 		if (System.currentTimeMillis() - shotTime > TIME_BETWEEN_SHOTS) {
 			if (StdDraw.isMousePressed()) {
 				setGunShotEffect();
 				checkDuckIsShoted();
+				checkBoomIsShoted();
 			}
 			shotTime = System.currentTimeMillis();
 		}
@@ -175,20 +184,33 @@ public class InGame implements Runnable {
 					flyingDucks[i].setDuckDead();
 					deadDuckNumber++;
 					totalDeadDuck++;
-					StdAudio.play("quak.wav");
+					StdAudio.play("Audio/Duck/quak.wav");
 					processConsecutiveShot();
 				}
 			}
 		}
 	}
-
+	private void checkBoomIsShoted(){
+		for (int i = 0; i < numberOfDuckThisRound; i++) {
+			if (!flyingDucks[i].duckHasBoom) {
+				if (StdDraw.mouseX() < flyingDucks[i].xBoomCoordinate + duckPading
+						&& StdDraw.mouseX() > flyingDucks[i].xBoomCoordinate - duckPading
+						&& StdDraw.mouseY() < flyingDucks[i].yBoomCoordinate + duckPading
+						&& StdDraw.mouseY() > flyingDucks[i].yBoomCoordinate - duckPading) {
+					flyingDucks[i].setBoomIsShoted();
+				}
+			}
+		}
+		
+	}
 	private void setGunShotEffect() {
 		gun.drawExplosion();
 		gun.bulletNumber--;
+		if(gun.bulletNumber<12) gun.canDrawDisappearEffect = true;
 		gun.drawShotingLightRay();
-		StdAudio.play("gunShot.wav");
-		StdAudio.play("gunReload.wav");
-
+		StdAudio.play("Audio/GunSound/gunShot.wav");
+		StdAudio.play("Audio/GunSound/gunReload.wav");
+		Gun.canGunExplosion = true;
 		Gun.canReloadAmo = true;// draw gun reloading amo
 	}
 	// </Process Things
@@ -204,13 +226,12 @@ public class InGame implements Runnable {
 			flyingDucks[i].addDuck();
 		}
 		updaterNewStatusOfDucks();
-		timeStartThisLevel = System.currentTimeMillis();
-		updateTimeRunning();
 		round++;
 		deadDuckNumber = 0;
 		consecutiveShotStatus = -1;
 		gun.bulletNumber = gun.BULLET_NUMBER + round;
 		valocity -= (double) 28 / (double) round;
+		timeStartThisLevel = System.currentTimeMillis();
 		System.out.println(valocity);
 
 	}
@@ -218,12 +239,16 @@ public class InGame implements Runnable {
 	private void updaterNewStatusOfDucks() {
 		for (int i = 0; i < numberOfDuckThisRound; i++) {
 			flyingDucks[i].isAlive = true;
+			flyingDucks[i].duckHasBoom = true;
+			flyingDucks[i].canBoomExplosion = true;
+			flyingDucks[i].canPlayExplosionSound = true;
 
 		}
 	}
 
 	private void creatNewInGame() {
 		numberOfDuckThisRound = NUMBER_OF_DUCKS;
+		totalDeadDuck = 0;
 		round = 0;
 		updateNextRound();
 		valocity = 80;
@@ -260,23 +285,31 @@ public class InGame implements Runnable {
 	// </Check Thing >
 	// <Draw things>
 	public void drawBackGround() {
-		StdDraw.picture(gameFrame.getHalfWidth(), gameFrame.getHalfHeight(), inGameBackground[round], GameFrame.WIDTH,GameFrame.HEIGHT);
+		StdDraw.picture(gameFrame.getHalfWidth(), gameFrame.getHalfHeight(), inGameBackground[round - 1],
+				GameFrame.WIDTH, GameFrame.HEIGHT);
 	}
-	private void drawSandBag(){
-		StdDraw.picture(GameFrame.HALF_WIDTH, 85, "sandbag.png", GameFrame.HALF_WIDTH + 350, 300);
+
+	private void drawSandBag() {
+		StdDraw.picture(GameFrame.HALF_WIDTH, 85, "Images/Background/sandbag.png", GameFrame.HALF_WIDTH + 350, 300);
 	}
+
+	private void drawVietNamFlag() {
+		StdDraw.picture(gameFrame.WIDTH - 200, 100, "Images/Decoration/VietNamFlagTrans.gif");
+	}
+
 	public void drawCross() {
-		drawBackGround();
-		StdDraw.picture(StdDraw.mouseX(), StdDraw.mouseY(), "gunCross2.png");
+		StdDraw.picture(StdDraw.mouseX(), StdDraw.mouseY(), "Images/Wepon/gunCross2.png");
 	}
 
 	private void drawDuck() {
 		for (int i = 0; i < numberOfDuckThisRound; i++) {
+			if(!flyingDucks[i].duckHasBoom)flyingDucks[i].drawBoombing();
 			if (flyingDucks[i].isAlive) {
 				drawAliveDuck(i);
 			} else {
 				drawDeadDuck(i);
 				flyingDucks[i].drawSplashBlood();
+
 			}
 		}
 	}
@@ -305,61 +338,112 @@ public class InGame implements Runnable {
 		StdDraw.setPenColor(StdDraw.WHITE);
 		StdDraw.setPenRadius(0.015);
 		StdDraw.line(0, gameFrame.HEIGHT - 22, getTimeRunningLength(), gameFrame.HEIGHT - 22);
-		StdDraw.picture(getTimeRunningLength(), gameFrame.HEIGHT - 22, "timeRunningDuck.png", 100, 100);
+		StdDraw.picture(getTimeRunningLength(), gameFrame.HEIGHT - 22, "Images/Decoration/timeRunningDuck.png", 100,
+				100);
 	}
 
 	private void drawGameOver() {
-		for(int i=0; i< GameFrame.HALF_WIDTH; i+=10){
-			StdDraw.picture(i, gameFrame.HALF_HEIGHT, "gameOver.jpg");
-			StdDraw.show(7);
+		for (int i = 0; i < GameFrame.HALF_WIDTH; i += 15) {
+//			StdDraw.picture(gameFrame.HALF_WIDTH, gameFrame.HALF_HEIGHT, "Images/Background/inGameBackground"+round+".jpg");
+			drawBackGround();
+			drawSandBag();
+			StdDraw.picture(i, gameFrame.HALF_HEIGHT, "Images/NumberWord/gameOver.jpg");
+			StdDraw.show(3);
 		}
-		for(int i=1; i<= totalDeadDuck; i++){
-			gun.drawNumber(i,gameFrame.HALF_WIDTH,gameFrame.HALF_HEIGHT+200);
-			StdDraw.show(100);
+		for (int i = 1; i <= totalDeadDuck; i++) {
+			drawScoreNumber(i);
 		}
-		
-			StdDraw.show(2500);
+
+		StdDraw.show(2000);
+	}
+
+	private void drawScoreNumber(int i) {
+		StdDraw.picture(gameFrame.HALF_WIDTH - 60, gameFrame.HALF_HEIGHT + 200, scoreNumber[i / 10], 80, 200);
+		StdDraw.picture(gameFrame.HALF_WIDTH + 25, gameFrame.HALF_HEIGHT + 200, scoreNumber[i % 10], 80, 200);
+		StdDraw.show(100);
+
 	}
 
 	private void drawReplayGameWallpaper() {
-		StdDraw.picture(GameFrame.HALF_WIDTH, GameFrame.HALF_HEIGHT, "replayWallpaper.png", GameFrame.WIDTH,
-				GameFrame.HEIGHT);
+		StdDraw.picture(GameFrame.HALF_WIDTH, GameFrame.HALF_HEIGHT, "Images/Background/replayWallpaper.png",
+				GameFrame.WIDTH, GameFrame.HEIGHT);
 		StdDraw.show(10);
 
 	}
 
 	private void drawNextRound() {
-		StdDraw.picture(gameFrame.HALF_WIDTH, gameFrame.HALF_HEIGHT, "transparent4DucksWallpaper.png", gameFrame.WIDTH,
-				gameFrame.HEIGHT);
-		StdDraw.setPenColor(119, 10, 10);
-		StdDraw.text(350, 450, "Round ");
-		StdDraw.text(350, 320, round + "");
-		StdDraw.show(1500);
+		for (int i = 0; i < 430; i += 20) {
+			drawBackGround();
+			drawSandBag();
+
+			// draw 4 ducks right side
+			StdDraw.picture(gameFrame.WIDTH - i - 270, gameFrame.HALF_HEIGHT,
+					"Images/Background/transparent4DucksWallpaper.png", gameFrame.WIDTH, gameFrame.HEIGHT);
+
+			// draw round board at left side
+			StdDraw.picture(i - 110, 525, "Images/NumberWord/metalBoardEditted.png", 472, 250);
+			textAndNumber.drawWord(i - 255, 529, "round", 40, 135);
+			textAndNumber.drawNumber(i - 5, 529, round, 40, 135);
+			StdDraw.show(3);
+		}
+		StdDraw.show(1200);
+		for (int i = 430; i >=-100 ; i -= 20) {
+			drawBackGround();
+			drawSandBag();
+
+			// draw 4 ducks right side
+			StdDraw.picture(gameFrame.WIDTH - i - 270, gameFrame.HALF_HEIGHT,
+					"Images/Background/transparent4DucksWallpaper.png", gameFrame.WIDTH, gameFrame.HEIGHT);
+
+			// draw round board at left side
+			StdDraw.picture(i - 110, 525, "Images/NumberWord/metalBoardEditted.png", 472, 250);
+			textAndNumber.drawWord(i - 255, 529, "round", 40, 135);
+			textAndNumber.drawNumber(i - 5, 529, round, 40, 135);
+			StdDraw.show(3);
+		}
+		
+		timeStartThisLevel = System.currentTimeMillis();
+		updateTimeRunning();
 
 	}
 
 	// </DrawThing>
 	// <Init Things > *************
 	private void initInGameBackground() {
-		inGameBackground = new String[9];
-		inGameBackground[0] = "inGameBackground0.jpg";
-		inGameBackground[1] = "inGameBackground1.jpg";
-		inGameBackground[2] = "inGameBackground2.jpg";
-		inGameBackground[3] = "inGameBackground3.jpg";
-		inGameBackground[4] = "inGameBackground4.jpg";
-		inGameBackground[5] = "inGameBackground5.jpg";
-		inGameBackground[6] = "inGameBackground6.jpg";
-		inGameBackground[7] = "inGameBackground7.jpg";
-		inGameBackground[8] = "inGameBackground8.jpg";
+		inGameBackground = new String[10];
+		inGameBackground[1] = "Images/Background/inGameBackground1.jpg";
+		inGameBackground[0] = "Images/Background/inGameBackground0.jpg";
+		inGameBackground[2] = "Images/Background/inGameBackground2.jpg";
+		inGameBackground[3] = "Images/Background/inGameBackground3.jpg";
+		inGameBackground[4] = "Images/Background/inGameBackground4.jpg";
+		inGameBackground[5] = "Images/Background/inGameBackground5.jpg";
+		inGameBackground[6] = "Images/Background/inGameBackground6.jpg";
+		inGameBackground[7] = "Images/Background/inGameBackground7.jpg";
+		inGameBackground[8] = "Images/Background/inGameBackground8.jpg";
+		inGameBackground[9] = "Images/Background/inGameBackground9.jpg";
+	}
+
+	private void initScoreNumberSprites() {
+		scoreNumber = new String[10];
+		scoreNumber[0] = "Images/NumberWord/Number/scoreBoard0.png";
+		scoreNumber[1] = "Images/NumberWord/Number/scoreBoard1.png";
+		scoreNumber[2] = "Images/NumberWord/Number/scoreBoard2.png";
+		scoreNumber[3] = "Images/NumberWord/Number/scoreBoard3.png";
+		scoreNumber[4] = "Images/NumberWord/Number/scoreBoard4.png";
+		scoreNumber[5] = "Images/NumberWord/Number/scoreBoard5.png";
+		scoreNumber[6] = "Images/NumberWord/Number/scoreBoard6.png";
+		scoreNumber[7] = "Images/NumberWord/Number/scoreBoard7.png";
+		scoreNumber[8] = "Images/NumberWord/Number/scoreBoard8.png";
+		scoreNumber[9] = "Images/NumberWord/Number/scoreBoard9.png";
 	}
 
 	private void setKillSoundArray() {
 		killSound = new String[5];
-		killSound[0] = "killSound0.wav";
-		killSound[1] = "killSound1.wav";
-		killSound[2] = "killSound2.wav";
-		killSound[3] = "killSound3.wav";
-		killSound[4] = "killSound4.wav";
+		killSound[0] = "Audio/Effect/KillSound/killSound0.wav";
+		killSound[1] = "Audio/Effect/KillSound/killSound1.wav";
+		killSound[2] = "Audio/Effect/KillSound/killSound2.wav";
+		killSound[3] = "Audio/Effect/KillSound/killSound3.wav";
+		killSound[4] = "Audio/Effect/KillSound/killSound4.wav";
 	}
 
 	private void createMatrix() {
