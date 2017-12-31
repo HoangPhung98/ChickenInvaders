@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 public class InGame implements Runnable {
 
 	GameFrame gameFrame;
+	City city;
 	private final int NUMBER_OF_DUCKS = 5;
 	private int numberOfDuckThisRound;
 	private final long TIME_BETWEEN_SHOTS = 175;
@@ -55,7 +56,8 @@ public class InGame implements Runnable {
 
 		gameFrame = new GameFrame();
 		GameFrame.started = true;
-
+		city = new City();
+		
 		initScoreNumberSprites();
 		initInGameBackground();
 		setKillSoundArray();
@@ -101,6 +103,7 @@ public class InGame implements Runnable {
 				drawTimeRunning();
 				drawDuck();
 				drawSandBag();
+				city.drawBloodBar();
 				drawCross();
 				drawVietNamFlag();
 
@@ -232,6 +235,7 @@ public class InGame implements Runnable {
 		gun.bulletNumber = gun.BULLET_NUMBER + round;
 		valocity -= (double) 28 / (double) round;
 		timeStartThisLevel = System.currentTimeMillis();
+		timeRunningStatus= TIME_OF_A_LEVEL;
 		System.out.println(valocity);
 
 	}
@@ -241,7 +245,9 @@ public class InGame implements Runnable {
 			flyingDucks[i].isAlive = true;
 			flyingDucks[i].duckHasBoom = true;
 			flyingDucks[i].canBoomExplosion = true;
+			flyingDucks[i].boomIsShoted=false;
 			flyingDucks[i].canPlayExplosionSound = true;
+			flyingDucks[i].hasDecreasBloodOfCity = false;
 
 		}
 	}
@@ -252,6 +258,7 @@ public class InGame implements Runnable {
 		round = 0;
 		updateNextRound();
 		valocity = 80;
+		city.resetBlood();
 	}
 
 	private int getTimeRunningLength() {
@@ -262,7 +269,7 @@ public class InGame implements Runnable {
 
 	// < Check Things > **************
 	private boolean checkGameOver() {
-		if (timeRunningStatus < 0 || gun.bulletNumber == 0) {
+		if (timeRunningStatus < 0 || gun.bulletNumber == 0 || city.bloodStatus ==0) {
 			return true;
 		} else
 			return false;
@@ -343,20 +350,41 @@ public class InGame implements Runnable {
 	}
 
 	private void drawGameOver() {
+		drawReasonOfGameOver();
 		for (int i = 0; i < GameFrame.HALF_WIDTH; i += 15) {
-//			StdDraw.picture(gameFrame.HALF_WIDTH, gameFrame.HALF_HEIGHT, "Images/Background/inGameBackground"+round+".jpg");
-			drawBackGround();
-			drawSandBag();
+			drawBasicThingOnScreen();
 			StdDraw.picture(i, gameFrame.HALF_HEIGHT, "Images/NumberWord/gameOver.jpg");
 			StdDraw.show(3);
 		}
+		
 		for (int i = 1; i <= totalDeadDuck; i++) {
 			drawScoreNumber(i);
 		}
 
 		StdDraw.show(2000);
 	}
+	private void drawReasonOfGameOver(){
+		for (int i = 0; i < gameFrame.HALF_WIDTH; i += 20) {
+			drawBasicThingOnScreen();
 
+			// draw round board at left side
+			StdDraw.picture(i , gameFrame.HALF_HEIGHT-10, "Images/NumberWord/metalBoardEditted.png", 472, 250);
+			if(gun.bulletNumber==0){
+			textAndNumber.drawWord(i - 145, gameFrame.HALF_HEIGHT, "het", 40, 135);
+			textAndNumber.drawWord(i +20, gameFrame.HALF_HEIGHT, "dan", 40, 135);
+			}else
+				if(city.bloodStatus==0){
+					textAndNumber.drawWord(i - 160, gameFrame.HALF_HEIGHT, "city", 40, 135);
+					textAndNumber.drawWord(i +55, gameFrame.HALF_HEIGHT, "ruin", 40, 135);
+				}else{
+					textAndNumber.drawWord(i - 150, gameFrame.HALF_HEIGHT, "time", 40, 135);
+					textAndNumber.drawWord(i +80, gameFrame.HALF_HEIGHT, "up", 40, 135);
+				}
+//			textAndNumber.drawNumber(i - 5, 529, round, 40, 135);
+			StdDraw.show(3);
+		}
+		StdDraw.show(1800);
+	}
 	private void drawScoreNumber(int i) {
 		StdDraw.picture(gameFrame.HALF_WIDTH - 60, gameFrame.HALF_HEIGHT + 200, scoreNumber[i / 10], 80, 200);
 		StdDraw.picture(gameFrame.HALF_WIDTH + 25, gameFrame.HALF_HEIGHT + 200, scoreNumber[i % 10], 80, 200);
@@ -373,8 +401,7 @@ public class InGame implements Runnable {
 
 	private void drawNextRound() {
 		for (int i = 0; i < 430; i += 20) {
-			drawBackGround();
-			drawSandBag();
+			drawBasicThingOnScreen();
 
 			// draw 4 ducks right side
 			StdDraw.picture(gameFrame.WIDTH - i - 270, gameFrame.HALF_HEIGHT,
@@ -388,9 +415,8 @@ public class InGame implements Runnable {
 		}
 		StdDraw.show(1200);
 		for (int i = 430; i >=-100 ; i -= 20) {
-			drawBackGround();
-			drawSandBag();
-
+			
+			drawBasicThingOnScreen();
 			// draw 4 ducks right side
 			StdDraw.picture(gameFrame.WIDTH - i - 270, gameFrame.HALF_HEIGHT,
 					"Images/Background/transparent4DucksWallpaper.png", gameFrame.WIDTH, gameFrame.HEIGHT);
@@ -402,9 +428,19 @@ public class InGame implements Runnable {
 			StdDraw.show(3);
 		}
 		
+		
 		timeStartThisLevel = System.currentTimeMillis();
 		updateTimeRunning();
 
+	}
+	private void drawBasicThingOnScreen(){
+		drawBackGround();
+		drawSandBag();
+		city.drawBloodBar();
+		gun.drawGunWithDegree();
+		gun.drawBullet();
+		drawCross();
+		drawVietNamFlag();
 	}
 
 	// </DrawThing>

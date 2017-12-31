@@ -2,7 +2,7 @@ import java.awt.Point;
 
 public class Gun {
 	// Status
-	static final int BULLET_NUMBER = 10;
+	static final int BULLET_NUMBER = 15;
 	static int bulletNumber = BULLET_NUMBER;
 	// Position
 	double canhHuyen, canhX, canhY;
@@ -128,7 +128,7 @@ public class Gun {
 	private void init() {
 		gunStatic = "Images/Wepon/gunStaticFixed.png";
 		bulletPicture = "Images/Wepon/bullet.png";
-		explosion = "Images/Effect/explosion.png";
+		explosion = "Images/Effect/GunExplosion/explosion.png";
 		gunReloadingAnimation[0] = "Images/Wepon/gunReloadingAnimation0.png";
 		gunReloadingAnimation[1] = "Images/Wepon/gunReloadingAnimation1.png";
 		gunReloadingAnimation[2] = "Images/Wepon/gunReloadingAnimation2.png";
@@ -136,19 +136,19 @@ public class Gun {
 		gunReloadingAnimation[4] = "Images/Wepon/gunReloadingAnimation4.png";
 		gunReloadingAnimation[5] = "Images/Wepon/gunReloadingAnimation5.png";
 
-		gunExplotionAnimation[0] = "Images/Effect/gunExplosion0.png";
-		gunExplotionAnimation[1] = "Images/Effect/gunExplosion1.png";
-		gunExplotionAnimation[2] = "Images/Effect/gunExplosion2.png";
+		gunExplotionAnimation[0] = "Images/Effect/GunExplosion/gunExplosion0.png";
+		gunExplotionAnimation[1] = "Images/Effect/GunExplosion/gunExplosion1.png";
+		gunExplotionAnimation[2] = "Images/Effect/GunExplosion/gunExplosion2.png";
 		
-		disappearEffect[0] = "Images/Effect/disappearEffect0.png";
-		disappearEffect[1] = "Images/Effect/disappearEffect1.png";
-		disappearEffect[2] = "Images/Effect/disappearEffect2.png";
-		disappearEffect[3] = "Images/Effect/disappearEffect3.png";
-		disappearEffect[4] = "Images/Effect/disappearEffect4.png";
-		disappearEffect[5] = "Images/Effect/disappearEffect6.png";
-		disappearEffect[6] = "Images/Effect/disappearEffect6.png";
-		disappearEffect[7] = "Images/Effect/disappearEffect7.png";
-		disappearEffect[8] = "Images/Effect/disappearEffect8.png";
+		disappearEffect[0] = "Images/Effect/GunExplosion/disappearEffect0.png";
+		disappearEffect[1] = "Images/Effect/GunExplosion/disappearEffect1.png";
+		disappearEffect[2] = "Images/Effect/GunExplosion/disappearEffect2.png";
+		disappearEffect[3] = "Images/Effect/GunExplosion/disappearEffect3.png";
+		disappearEffect[4] = "Images/Effect/GunExplosion/disappearEffect4.png";
+		disappearEffect[5] = "Images/Effect/GunExplosion/disappearEffect6.png";
+		disappearEffect[6] = "Images/Effect/GunExplosion/disappearEffect6.png";
+		disappearEffect[7] = "Images/Effect/GunExplosion/disappearEffect7.png";
+		disappearEffect[8] = "Images/Effect/GunExplosion/disappearEffect8.png";
 
 	}
 	// </Init Things>

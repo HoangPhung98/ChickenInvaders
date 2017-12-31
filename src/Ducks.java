@@ -1,6 +1,9 @@
 import java.awt.Point;
+import java.awt.print.Book;
 
 public class Ducks {
+	//logic
+	public boolean hasDecreasBloodOfCity = false;
 	// Position
 	public int xCoordinate;
 	public int yCoordinate;
@@ -25,6 +28,8 @@ public class Ducks {
 	String[] duckDeadAnimation = new String[3];
 	String[] splashBloodAnimation = new String[6];
 	String[] boom = new String[5];
+	String[] boomIsShotedExplosion = new String[25];
+	String[] boomHitGroundExplosion = new String[25];
 	String splashBloodPicture;
 	int duckAnimationStatus = 0;
 	int duckDeadAnimationStatus = 1;
@@ -39,7 +44,7 @@ public class Ducks {
 	boolean boomIsShoted = false;
 
 	// Color
-	private String[] colorAray = { "blue", "green", "red" };
+	private String[] colorAray = { "Blue", "Green", "Red" };
 	private String color;
 
 	// Time
@@ -55,6 +60,8 @@ public class Ducks {
 		setDuckDeadAnimation();
 		setSplashBloodPicture();
 		setRamdomBoomExplosionPosition();
+		setBoomHitGroundAnimation(color);
+		setBoomIsShottedAnimation(color);
 	}
 
 	// < Process Things > ****************
@@ -137,34 +144,52 @@ public class Ducks {
 	public void drawBoombing() {
 		if (!boomIsShoted) {
 			if (yBoomCoordinate > boomExplosionPosition) {
-				StdDraw.picture(xBoomCoordinate, yBoomCoordinate, "Images/Wepon/boom0.png", 50, 50);
+				StdDraw.picture(xBoomCoordinate, yBoomCoordinate, "Images/Wepon/boom"+this.color+".png", 100, 100);
 				updateBoomPosition();
 			} else {
-				// if (canBoomExplosion) {
-				drawBoomExplosion();
+				if(!hasDecreasBloodOfCity){
+					City.bloodStatus-=50;
+					if(City.bloodStatus<0)City.bloodStatus=0;
+					hasDecreasBloodOfCity=true;
+				}
+				drawBoomHitGroundExplosion();
 				// }
 				if (canPlayExplosionSound) {
-					StdAudio.play("Audio/Effect/Boom/boomExplosionSound.wav");
+					StdAudio.play("Audio/Effect/Boom/boomFallingExplosionSound.wav");
 					canPlayExplosionSound = false;
 				}
 			}
 		} else {
-			drawBoomExplosion();
+			drawBoomIsShotedExplosion();
+			if(canPlayExplosionSound){
+				StdAudio.play("Audio/Effect/Boom/boomExplosionSound"+this.color+".Wav");
+				canPlayExplosionSound =false;
+			}
 		}
 
 	}
 
-	public void drawBoomExplosion() {
+	public void drawBoomHitGroundExplosion() {
 		if (canBoomExplosion) {
-			StdDraw.picture(xBoomCoordinate, yBoomCoordinate,
-					"Images/Effect/disappearEffect" + boomExplosionStatus + ".png", 100, 100);
+			StdDraw.picture(xBoomCoordinate, yBoomCoordinate,boomHitGroundExplosion[boomExplosionStatus], 200, 200);
 			boomExplosionStatus++;
-			if (boomExplosionStatus == 8) {
+			if (boomHitGroundExplosion[boomExplosionStatus] == null) {
 				canBoomExplosion = false;
 				boomExplosionStatus = 0;
 			}
 		}
 	}
+	public void drawBoomIsShotedExplosion() {
+		if (canBoomExplosion) {
+			StdDraw.picture(xBoomCoordinate, yBoomCoordinate,boomIsShotedExplosion[boomExplosionStatus], 200, 200);
+			boomExplosionStatus++;
+			if (boomIsShotedExplosion[boomExplosionStatus] == null) {
+				canBoomExplosion = false;
+				boomExplosionStatus = 0;
+			}
+		}
+	}
+
 
 	// </Draw Things>
 	// < Set Things? ***********
@@ -178,6 +203,7 @@ public class Ducks {
 		xBoomDicrection = 0;
 		yBoomDicrection = -10;
 		duckHasBoom = false;
+		StdAudio.play("Audio/Effect/Boom/boomFallingSound.wav");
 
 	}
 
@@ -258,18 +284,59 @@ public class Ducks {
 
 	// < Init Things > *********************
 	void addDuck() {
+		color = colorAray[StdRandom.uniform(0, 3)];
+		setDuckRightAnimation();
+		setDuckLeftAnimation();
+		setDuckDeadAnimation();
+		setRamdomBoomExplosionPosition();
+		setBoomHitGroundAnimation(color);
+		setBoomIsShottedAnimation(color);
+		
 		this.yCoordinate = getCoordinateOfDuck().y;
 		this.xCoordinate = getCoordinateOfDuck().x;
-		color = colorAray[StdRandom.uniform(0, 3)];
 		setRamdomDirection();
 		setRamdomSplashBlood();
 		updateDuckDegree();
+
 	}
 
-	private void setBoomImage() {
-		boom[0] = "Images/Wepon/boom0.png";
+	private void setBoomIsShottedAnimation(String color){
+		boomIsShotedExplosion[0] = "Images/Effect/BoomExplosion/IsShoted/"+color+"/0.png";
+		boomIsShotedExplosion[1] = "Images/Effect/BoomExplosion/IsShoted/"+color+"/1.png";
+		boomIsShotedExplosion[2] = "Images/Effect/BoomExplosion/IsShoted/"+color+"/2.png";
+		boomIsShotedExplosion[3] = "Images/Effect/BoomExplosion/IsShoted/"+color+"/3.png";
+		boomIsShotedExplosion[4] = "Images/Effect/BoomExplosion/IsShoted/"+color+"/4.png";
+		boomIsShotedExplosion[5] = "Images/Effect/BoomExplosion/IsShoted/"+color+"/5.png";
+		boomIsShotedExplosion[6] = "Images/Effect/BoomExplosion/IsShoted/"+color+"/6.png";
+		boomIsShotedExplosion[7] = "Images/Effect/BoomExplosion/IsShoted/"+color+"/7.png";
+		boomIsShotedExplosion[8] = "Images/Effect/BoomExplosion/IsShoted/"+color+"/8.png";
+		boomIsShotedExplosion[9] = "Images/Effect/BoomExplosion/IsShoted/"+color+"/9.png";
+		boomIsShotedExplosion[10] = "Images/Effect/BoomExplosion/IsShoted/"+color+"/10.png";
+		boomIsShotedExplosion[11] = "Images/Effect/BoomExplosion/IsShoted/"+color+"/11.png";
+		boomIsShotedExplosion[12] = "Images/Effect/BoomExplosion/IsShoted/"+color+"/12.png";
+		boomIsShotedExplosion[13] = "Images/Effect/BoomExplosion/IsShoted/"+color+"/13.png";
+		boomIsShotedExplosion[14] = "Images/Effect/BoomExplosion/IsShoted/"+color+"/14.png";
+		boomIsShotedExplosion[15] = "Images/Effect/BoomExplosion/IsShoted/"+color+"/15.png";
 	}
-
+	private void setBoomHitGroundAnimation(String color){
+		boomHitGroundExplosion[0] = "Images/Effect/BoomExplosion/HitGround/"+color+"/0.png";
+		boomHitGroundExplosion[1] = "Images/Effect/BoomExplosion/HitGround/"+color+"/1.png";
+		boomHitGroundExplosion[2] = "Images/Effect/BoomExplosion/HitGround/"+color+"/2.png";
+		boomHitGroundExplosion[3] = "Images/Effect/BoomExplosion/HitGround/"+color+"/3.png";
+		boomHitGroundExplosion[4] = "Images/Effect/BoomExplosion/HitGround/"+color+"/4.png";
+		boomHitGroundExplosion[5] = "Images/Effect/BoomExplosion/HitGround/"+color+"/5.png";
+		boomHitGroundExplosion[6] = "Images/Effect/BoomExplosion/HitGround/"+color+"/6.png";
+		boomHitGroundExplosion[7] = "Images/Effect/BoomExplosion/HitGround/"+color+"/7.png";
+		boomHitGroundExplosion[8] = "Images/Effect/BoomExplosion/HitGround/"+color+"/8.png";
+		boomHitGroundExplosion[9] = "Images/Effect/BoomExplosion/HitGround/"+color+"/9.png";
+		boomHitGroundExplosion[10] = "Images/Effect/BoomExplosion/HitGround/"+color+"/10.png";
+		boomHitGroundExplosion[11] = "Images/Effect/BoomExplosion/HitGround/"+color+"/11.png";
+		boomHitGroundExplosion[12] = "Images/Effect/BoomExplosion/HitGround/"+color+"/12.png";
+		boomHitGroundExplosion[13] = "Images/Effect/BoomExplosion/HitGround/"+color+"/13.png";
+		boomHitGroundExplosion[14] = "Images/Effect/BoomExplosion/HitGround/"+color+"/14.png";
+		boomHitGroundExplosion[15] = "Images/Effect/BoomExplosion/HitGround/"+color+"/15.png";
+		
+	}
 	private void setDuckRightAnimation() {
 		this.duckRightAnimation[0] = "Images/Duck/" + this.color + "Duck/" + this.color + "DuckR0.png";
 		this.duckRightAnimation[1] = "Images/Duck/" + this.color + "Duck/" + this.color + "DuckR1.png";
@@ -289,12 +356,12 @@ public class Ducks {
 	}
 
 	private void setSplashBloodPicture() {
-		splashBloodAnimation[0] = "Images/Effect/bloodSplash0.png";
-		splashBloodAnimation[1] = "Images/Effect/bloodSplash1.png";
-		splashBloodAnimation[2] = "Images/Effect/bloodSplash2.png";
-		splashBloodAnimation[3] = "Images/Effect/bloodSplash3.png";
-		splashBloodAnimation[4] = "Images/Effect/bloodSplash4.png";
-		splashBloodAnimation[5] = "Images/Effect/bloodSplash5.png";
+		splashBloodAnimation[0] = "Images/Effect/Splash/bloodSplash0.png";
+		splashBloodAnimation[1] = "Images/Effect/Splash/bloodSplash1.png";
+		splashBloodAnimation[2] = "Images/Effect/Splash/bloodSplash2.png";
+		splashBloodAnimation[3] = "Images/Effect/Splash/bloodSplash3.png";
+		splashBloodAnimation[4] = "Images/Effect/Splash/bloodSplash4.png";
+		splashBloodAnimation[5] = "Images/Effect/Splash/bloodSplash5.png";
 	}
 	// </ Init Things>
 
