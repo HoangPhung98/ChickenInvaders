@@ -53,12 +53,12 @@ public class GameFrame  {
 		StdDraw.setYscale(0, HEIGHT);
 		drawWindow();
 //		StdAudio.loop("Audio/BackgroundSound/kingsMan.wav");
-//		StdAudio.loop("Audio/BackgroundSound/PacificRimSoundTrackCut.wav");
+		StdAudio.loop("Audio/BackgroundSound/PacificRimSoundTrackCut.wav");
 		
 		
 	}
 	public static  void drawWindow(){
-		StdDraw.picture(HALF_WIDTH, HALF_HEIGHT, "Images/Background/inGameBackground8.jpg", WIDTH, HEIGHT);
+		StdDraw.picture(HALF_WIDTH, HALF_HEIGHT, "Images/Background/inGameBackground5.jpg", WIDTH, HEIGHT);
 		StdDraw.picture(HALF_WIDTH, HALF_HEIGHT, "Images/Background/playWallpaper.png", WIDTH, HEIGHT);
 		StdDraw.setPenColor(StdDraw.BOOK_BLUE);
 

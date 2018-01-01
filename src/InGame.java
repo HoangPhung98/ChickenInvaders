@@ -11,10 +11,12 @@ import java.util.Arrays;
 import javax.swing.JPanel;
 
 public class InGame implements Runnable {
-
+	//logic
+	private boolean canDrawFirstRound;
+	
 	GameFrame gameFrame;
 	City city;
-	private final int NUMBER_OF_DUCKS = 5;
+	private final int NUMBER_OF_DUCKS = 7;
 	private int numberOfDuckThisRound;
 	private final long TIME_BETWEEN_SHOTS = 175;
 	private final long TIME_OF_A_LEVEL = 30000;
@@ -63,6 +65,7 @@ public class InGame implements Runnable {
 		setKillSoundArray();
 		createMatrix();
 		round = 1;
+		canDrawFirstRound=true;
 
 		drawBackGround();
 		gun = new Gun();
@@ -77,7 +80,7 @@ public class InGame implements Runnable {
 		totalDeadDuck = 0;
 		numberOfDuckThisRound = NUMBER_OF_DUCKS;
 		timeRunningStatus = TIME_OF_A_LEVEL;
-
+//		StdAudio.loop("Audio/Duck/quacking.wav");
 		run();
 
 	}
@@ -98,6 +101,7 @@ public class InGame implements Runnable {
 						flyingDucks[i].updateDuckPosition();
 					time = System.currentTimeMillis();
 				}
+				if(canDrawFirstRound)drawFirstRound();
 				drawBackGround();
 				processShot();
 				drawTimeRunning();
@@ -120,7 +124,7 @@ public class InGame implements Runnable {
 						e.printStackTrace();
 					}
 					updateNextRound();
-					drawNextRound();
+					if(!canDrawFirstRound)drawNextRound();
 				}
 
 				if (checkGameOver() == true) {
@@ -198,8 +202,8 @@ public class InGame implements Runnable {
 			if (!flyingDucks[i].duckHasBoom) {
 				if (StdDraw.mouseX() < flyingDucks[i].xBoomCoordinate + duckPading
 						&& StdDraw.mouseX() > flyingDucks[i].xBoomCoordinate - duckPading
-						&& StdDraw.mouseY() < flyingDucks[i].yBoomCoordinate + duckPading
-						&& StdDraw.mouseY() > flyingDucks[i].yBoomCoordinate - duckPading) {
+						&& StdDraw.mouseY() < flyingDucks[i].yBoomCoordinate + duckPading+20
+						&& StdDraw.mouseY() > flyingDucks[i].yBoomCoordinate - duckPading-20) {
 					flyingDucks[i].setBoomIsShoted();
 				}
 			}
@@ -224,6 +228,7 @@ public class InGame implements Runnable {
 	}
 
 	private void updateNextRound() {
+		if(!isWinTheGame()){
 		numberOfDuckThisRound = NUMBER_OF_DUCKS + (int) (round / 2);
 		for (int i = 0; i < numberOfDuckThisRound; i++) {
 			flyingDucks[i].addDuck();
@@ -237,6 +242,13 @@ public class InGame implements Runnable {
 		timeStartThisLevel = System.currentTimeMillis();
 		timeRunningStatus= TIME_OF_A_LEVEL;
 		System.out.println(valocity);
+		}else{
+			drawWinTheGame();
+			gameFrame.drawWindow();
+			gameFrame.isPlaying=false;
+			gameFrame.waitForStartGame();
+			creatNewInGame();
+		}
 
 	}
 
@@ -256,6 +268,7 @@ public class InGame implements Runnable {
 		numberOfDuckThisRound = NUMBER_OF_DUCKS;
 		totalDeadDuck = 0;
 		round = 0;
+		canDrawFirstRound=true;
 		updateNextRound();
 		valocity = 80;
 		city.resetBlood();
@@ -268,6 +281,11 @@ public class InGame implements Runnable {
 	// </Update Thing>
 
 	// < Check Things > **************
+	
+	private boolean isWinTheGame(){
+		if(round == 2) return true;
+		else return false;
+	}
 	private boolean checkGameOver() {
 		if (timeRunningStatus < 0 || gun.bulletNumber == 0 || city.bloodStatus ==0) {
 			return true;
@@ -291,6 +309,17 @@ public class InGame implements Runnable {
 
 	// </Check Thing >
 	// <Draw things>
+	private void drawWinTheGame(){
+		for (int i = 0; i < gameFrame.HALF_WIDTH; i += 20) {
+			drawBasicThingOnScreen();
+
+			// draw round board from left side
+			StdDraw.picture(i , gameFrame.HALF_HEIGHT-10, "Images/NumberWord/metalBoardEditted.png", 472, 250);
+			textAndNumber.drawWord(i-150, gameFrame.HALF_HEIGHT, "victory", 45, 135);
+			StdDraw.show(3);
+		}
+		StdDraw.show(1800);
+	}
 	public void drawBackGround() {
 		StdDraw.picture(gameFrame.getHalfWidth(), gameFrame.getHalfHeight(), inGameBackground[round - 1],
 				GameFrame.WIDTH, GameFrame.HEIGHT);
@@ -431,6 +460,42 @@ public class InGame implements Runnable {
 		
 		timeStartThisLevel = System.currentTimeMillis();
 		updateTimeRunning();
+
+	}
+	// the first round dont has a welcom scene so i write this founction to draw it
+	private void drawFirstRound() {
+		for (int i = 0; i < 430; i += 20) {
+			drawBasicThingOnScreen();
+
+			// draw 4 ducks right side
+			StdDraw.picture(gameFrame.WIDTH - i - 270, gameFrame.HALF_HEIGHT,
+					"Images/Background/transparent4DucksWallpaper.png", gameFrame.WIDTH, gameFrame.HEIGHT);
+
+			// draw round board at left side
+			StdDraw.picture(i - 110, 525, "Images/NumberWord/metalBoardEditted.png", 472, 250);
+			textAndNumber.drawWord(i - 255, 529, "round", 40, 135);
+			textAndNumber.drawNumber(i - 5, 529, round, 40, 135);
+			StdDraw.show(3);
+		}
+		StdDraw.show(1200);
+		for (int i = 430; i >=-100 ; i -= 20) {
+			
+			drawBasicThingOnScreen();
+			// draw 4 ducks right side
+			StdDraw.picture(gameFrame.WIDTH - i - 270, gameFrame.HALF_HEIGHT,
+					"Images/Background/transparent4DucksWallpaper.png", gameFrame.WIDTH, gameFrame.HEIGHT);
+
+			// draw round board at left side
+			StdDraw.picture(i - 110, 525, "Images/NumberWord/metalBoardEditted.png", 472, 250);
+			textAndNumber.drawWord(i - 255, 529, "round", 40, 135);
+			textAndNumber.drawNumber(i - 5, 529, round, 40, 135);
+			StdDraw.show(3);
+		}
+		
+		
+		timeStartThisLevel = System.currentTimeMillis();
+		updateTimeRunning();
+		canDrawFirstRound = false;
 
 	}
 	private void drawBasicThingOnScreen(){

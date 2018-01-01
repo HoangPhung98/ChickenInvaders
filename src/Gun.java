@@ -2,7 +2,7 @@ import java.awt.Point;
 
 public class Gun {
 	// Status
-	static final int BULLET_NUMBER = 15;
+	static final int BULLET_NUMBER = 18;
 	static int bulletNumber = BULLET_NUMBER;
 	// Position
 	double canhHuyen, canhX, canhY;
@@ -48,6 +48,7 @@ public class Gun {
 
 	public void drawShotingLightRay() {
 		StdDraw.setPenRadius(0.025);
+		StdDraw.setPenColor(StdDraw.WHITE);
 		StdDraw.line(GameFrame.HALF_WIDTH, 25, StdDraw.mouseX(), StdDraw.mouseY());
 	}
 

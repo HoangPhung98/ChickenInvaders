@@ -70,7 +70,7 @@ public class Ducks {
 		if (this.yCoordinate + 20 > GameFrame.getHeight()) {
 			// if (!checkHit4Times(this)) {
 			this.ydirection *= -1;
-			if (duckHasBoom)
+			if (StdRandom.uniform(2)==1 && duckHasBoom)
 				setABoom();
 			// this.hitWallTimes++;
 		} else {
@@ -201,7 +201,7 @@ public class Ducks {
 		xBoomCoordinate = this.xCoordinate;
 		yBoomCoordinate = this.yCoordinate;
 		xBoomDicrection = 0;
-		yBoomDicrection = -10;
+		yBoomDicrection = -14;
 		duckHasBoom = false;
 		StdAudio.play("Audio/Effect/Boom/boomFallingSound.wav");
 
