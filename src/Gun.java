@@ -2,7 +2,7 @@ import java.awt.Point;
 
 public class Gun {
 	// Status
-	static final int BULLET_NUMBER = 18;
+	static final int BULLET_NUMBER = 20;
 	static int bulletNumber = BULLET_NUMBER;
 	// Position
 	double canhHuyen, canhX, canhY;
@@ -79,13 +79,13 @@ public class Gun {
 			this.gunExplotionStatus++;
 			if(canDrawDisappearEffect){
 				this.disappearEffectStatus++;
-				StdDraw.picture(50+bulletNumber*25, 80, disappearEffect[disappearEffectStatus],120,120);
+				StdDraw.picture(50+bulletNumber*25, 80, disappearEffect[disappearEffectStatus],150,150);
 			}
 			StdDraw.picture(getPositionOfGunExplosion().x, getPositionOfGunExplosion().y,
 					gunExplotionAnimation[this.gunExplotionStatus], GUN_EXPLOSION_SIZE, GUN_EXPLOSION_SIZE);
 			StdDraw.picture(GameFrame.HALF_WIDTH, 20, gunReloadingAnimation[this.reloadGunAmoStatus], GUN_SIZE_X,
 					GUN_SIZE_Y - 150, getDegreeOfGun());
-			StdDraw.show(5);
+			StdDraw.show(4);
 			if(disappearEffectStatus == 8){
 				canDrawDisappearEffect = false;
 				disappearEffectStatus = -1;

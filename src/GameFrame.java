@@ -58,7 +58,7 @@ public class GameFrame  {
 		
 	}
 	public static  void drawWindow(){
-		StdDraw.picture(HALF_WIDTH, HALF_HEIGHT, "Images/Background/inGameBackground5.jpg", WIDTH, HEIGHT);
+		StdDraw.picture(HALF_WIDTH, HALF_HEIGHT, "Images/Background/inGameBackground7.jpg", WIDTH, HEIGHT);
 		StdDraw.picture(HALF_WIDTH, HALF_HEIGHT, "Images/Background/playWallpaper.png", WIDTH, HEIGHT);
 		StdDraw.setPenColor(StdDraw.BOOK_BLUE);
 

@@ -18,7 +18,7 @@ public class InGame implements Runnable {
 	City city;
 	private final int NUMBER_OF_DUCKS = 7;
 	private int numberOfDuckThisRound;
-	private final long TIME_BETWEEN_SHOTS = 175;
+	private final long TIME_BETWEEN_SHOTS = 135;
 	private final long TIME_OF_A_LEVEL = 30000;
 	private final long TIME_BETWEEN_CONSECUTIVE_SHOT = 2250;
 	final int duckSize = 65;
@@ -136,9 +136,9 @@ public class InGame implements Runnable {
 					creatNewInGame();
 					System.out.println("xxx");
 				}
-				StdDraw.show(4);
+				StdDraw.show();
 				try {
-					thread.sleep(8);
+					thread.sleep(0);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -237,7 +237,7 @@ public class InGame implements Runnable {
 		round++;
 		deadDuckNumber = 0;
 		consecutiveShotStatus = -1;
-		gun.bulletNumber = gun.BULLET_NUMBER + round;
+		gun.bulletNumber = gun.BULLET_NUMBER + round+2;
 		valocity -= (double) 28 / (double) round;
 		timeStartThisLevel = System.currentTimeMillis();
 		timeRunningStatus= TIME_OF_A_LEVEL;
@@ -283,7 +283,7 @@ public class InGame implements Runnable {
 	// < Check Things > **************
 	
 	private boolean isWinTheGame(){
-		if(round == 2) return true;
+		if(round == 7) return true;
 		else return false;
 	}
 	private boolean checkGameOver() {

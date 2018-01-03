@@ -2,3 +2,8 @@ Dog and duck Sprite:
 	http://fantendo.wikia.com/wiki/File:Duckhunt_various_sheet.png
 
 	https://github.com/drmikeh/duck-hunt/tree/master/app/images
+
+Audio:
+	freesound.org
+	freesoundeffect.org
+	soundbible.com

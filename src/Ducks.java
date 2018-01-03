@@ -201,7 +201,7 @@ public class Ducks {
 		xBoomCoordinate = this.xCoordinate;
 		yBoomCoordinate = this.yCoordinate;
 		xBoomDicrection = 0;
-		yBoomDicrection = -14;
+		yBoomDicrection = -10;
 		duckHasBoom = false;
 		StdAudio.play("Audio/Effect/Boom/boomFallingSound.wav");
 
