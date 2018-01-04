@@ -26,7 +26,7 @@ public class Gun {
 	public static boolean canDrawDisappearEffect = false;
 	TextAndNumber textAndNumber;
 	// Time
-	private long timeReloadGunAmo = 30;
+	private long timeReloadGunAmo = 15;
 	private long time = 0;
 
 	// ==================================================================================
@@ -69,7 +69,7 @@ public class Gun {
 	private void drawDisappearEffectOfBullet(int index){
 		for(int i=0 ;i<9; i++){
 			StdDraw.picture(50+index*25	, 80, disappearEffect[i],100,100);
-			StdDraw.show(1);
+			StdDraw.show(0);
 		}
 		canDrawDisappearEffect = false;
 	}
@@ -85,7 +85,7 @@ public class Gun {
 					gunExplotionAnimation[this.gunExplotionStatus], GUN_EXPLOSION_SIZE, GUN_EXPLOSION_SIZE);
 			StdDraw.picture(GameFrame.HALF_WIDTH, 20, gunReloadingAnimation[this.reloadGunAmoStatus], GUN_SIZE_X,
 					GUN_SIZE_Y - 150, getDegreeOfGun());
-			StdDraw.show(4);
+			StdDraw.show(0);
 			if(disappearEffectStatus == 8){
 				canDrawDisappearEffect = false;
 				disappearEffectStatus = -1;

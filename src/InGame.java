@@ -237,7 +237,7 @@ public class InGame implements Runnable {
 		round++;
 		deadDuckNumber = 0;
 		consecutiveShotStatus = -1;
-		gun.bulletNumber = gun.BULLET_NUMBER + round+2;
+		gun.bulletNumber = gun.BULLET_NUMBER + round*2+2;
 		valocity -= (double) 28 / (double) round;
 		timeStartThisLevel = System.currentTimeMillis();
 		timeRunningStatus= TIME_OF_A_LEVEL;
@@ -319,6 +319,11 @@ public class InGame implements Runnable {
 			StdDraw.show(3);
 		}
 		StdDraw.show(1800);
+		for (int i = 1; i <= totalDeadDuck; i++) {
+			drawScoreNumber(i);
+		}
+
+		StdDraw.show(2000);
 	}
 	public void drawBackGround() {
 		StdDraw.picture(gameFrame.getHalfWidth(), gameFrame.getHalfHeight(), inGameBackground[round - 1],

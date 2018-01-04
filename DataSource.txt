@@ -1,9 +1,18 @@
-Dog and duck Sprite:
+1.Dog and duck Sprite:
 	http://fantendo.wikia.com/wiki/File:Duckhunt_various_sheet.png
 
 	https://github.com/drmikeh/duck-hunt/tree/master/app/images
+2.Images:
+	search google image voi tu khoa :
+		gun:gun han asset, 
+		boom:boom explosion commic sprites, boom vector 
+		blood: splash blood images, blood bar vector
 
-Audio:
+3.Audio:
 	freesound.org
 	freesoundeffect.org
 	soundbible.com
+	youtube.vn
+
+	search voi tu khoa : boom explosion sound effect, boom falling effect, gun shot effect,
+		pacific rim soundtrack
