@@ -70,7 +70,7 @@ public class Ducks {
 		if (this.yCoordinate + 20 > GameFrame.getHeight()) {
 			// if (!checkHit4Times(this)) {
 			this.ydirection *= -1;
-			if (StdRandom.uniform(2)==1 && duckHasBoom)
+			if (StdRandom.uniform(2)==1 &&duckHasBoom)
 				setABoom();
 			// this.hitWallTimes++;
 		} else {

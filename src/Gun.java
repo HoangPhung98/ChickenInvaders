@@ -2,7 +2,7 @@ import java.awt.Point;
 
 public class Gun {
 	// Status
-	static final int BULLET_NUMBER = 20;
+	static final int BULLET_NUMBER = 50;
 	static int bulletNumber = BULLET_NUMBER;
 	// Position
 	double canhHuyen, canhX, canhY;
